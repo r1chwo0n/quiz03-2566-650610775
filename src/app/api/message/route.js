@@ -5,14 +5,25 @@ import { NextResponse } from "next/server";
 
 export const GET = async (request) => {
   readDB();
-
-  // return NextResponse.json(
-  //   {
-  //     ok: false,
-  //     message: `Room is not found`,
-  //   },
-  //   { status: 404 }
-  // );
+  const roomId = request.nextUrl.searchParams.get("roomId");
+  const foundroomId = DB.rooms.find((x) => x.roomId === roomId);
+  if (!foundroomId)
+    return NextResponse.json(
+      {
+        ok: false,
+        message: `Room is not found`,
+      },
+      { status: 404 }
+    );
+  const messages = [];
+  for (const roomId of DB.messages) {
+    const message = DB.messages.find((x) => x.roomId === foundroomId);
+    messages.push(message);
+  }
+  return NextResponse.json({
+    ok: true,
+    messages,
+  });
 };
 
 export const POST = async (request) => {
